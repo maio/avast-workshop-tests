@@ -1,0 +1,272 @@
+* Agenda
+- What's BDD?
+- Mocha framework
+- Cucumber framework
+- Avast Passwords tests
+  - Unit-tests
+  - Cucumber tests
+- Code, code, code...
+
+* BDD - Behavior-driven development
+
+Term coined by Dan North - https://dannorth.net/introducing-bdd/
+
+- Test method names should be sentences
+- A simple sentence template keeps test methods focused
+- An expressive test name is helpful when a test fails
+- “Behaviour” is a more useful word than “test”
+- Determine the next most important behaviour
+- ...
+
+* Mocha - BDD framework (describe/it)
+
+- [[https://mochajs.org/][mochajs.org]]
+
+#+BEGIN_SRC js2
+  describe("Calculator", function () {
+    describe("+ operation", function () {
+      it("calculates sum of all entered numbers", function () {
+        // test code
+      });
+    });
+
+    describe("/ operation", function () {
+      it("calculates division of all entered numbers", function () {
+        // test code
+      });
+
+      it("returns error if any of divisors is zero", function () {
+        // test code
+      });
+    });
+  });
+#+END_SRC
+
+** Test method names should be sentences (Dan North)
+- Calculator + operation calculates sum of all entered numbers
+- Calculator / operation calculates division of all entered numbers
+- Calculator / operation returns error if any of divisors is zero
+
+* Mocha - Example
+#+BEGIN_SRC js2
+  var assert = require('assert');
+
+  describe("Calculator", function () {
+    var calc;
+
+    beforeEach(function() {
+      calc = new Calculator();
+    });
+
+    describe("+ operation", function () {
+      it("calculates sum of all entered numbers", function () {
+        calc.enter(2);
+        calc.enter(3);
+        calc.op('+');
+
+        assert.equal(calc.result, 5);
+      });
+    });
+  });
+#+END_SRC
+
+* Mocha vs traditional testing frameworks
+#+BEGIN_SRC js2
+  function test_calc_plus() {
+    calc.enter(2);
+    calc.enter(3);
+    calc.op('+');
+    assertEqauls(calc.result, 5);
+  }
+#+END_SRC
+
+* Mocha Don'ts - Wrong describe/it block names
+#+BEGIN_SRC js2
+  describe("Calculator", function () {
+    describe("+", function () {
+      it("sum of 1 and 1 is 2", function () {
+      
+      });
+    });
+  });
+
+#+END_SRC
+
+- Calculator + sum of 1 and 1 is 2
+- vs
+- Calculator + operation calculates sum of all entered numbers
+
+* Mocha Don'ts - 'before' abuse
+#+BEGIN_SRC js2
+  describe("Calculator", function () {
+    beforeEach(function() {
+      var calc = new Calculator();
+      calc.enter(4);
+      calc.enter(2);
+    });
+
+    describe("+ operation", function () {
+      it("calculates sum of all entered numbers", function () {
+        calc.op('+');
+        expect(calc.result).toEqual(6);
+      });
+    });
+
+    describe("/ operation", function () {
+      it("calculates division of all entered numbers", function () {
+        calc.op('/');
+        expect(calc.result).toEqual(2);
+      });
+    });
+  });
+#+END_SRC
+
+It's better to put only incidental details and not essential stuff
+into before steps.
+
+* Mocha - Install
+- [[https://mochajs.org/#installation][mochajs.org / Instalation]]
+
+#+BEGIN_SRC sh
+mkdir my-project
+cd my-project
+npm init
+npm install --save-dev mocha
+#+END_SRC
+
+** Run
+- =package.json=
+    #+BEGIN_SRC json
+    "scripts": {
+        "test": "mocha"
+    },
+    #+END_SRC
+
+#+BEGIN_SRC sh
+npm test
+#+END_SRC
+
+** Autorun
+#+BEGIN_SRC sh
+npm install --save-dev nodemon
+#+END_SRC
+
+- =package.json=
+    #+BEGIN_SRC json
+    "scripts": {
+        "watch-test": "nodemon --exec mocha"
+    },
+    #+END_SRC
+
+#+BEGIN_SRC sh
+npm run watch-test
+#+END_SRC
+
+* Cucumber - BDD testing framework
+
+- Gherkin is the language is used to define test cases
+  - It is designed to be non-technical and human readable
+- Gherkin is plain-text English (or one of 60+ other languages)
+  
+#+BEGIN_SRC feature
+Feature: Refund item
+  Sales assistants should be able to refund customers' purchases.
+  It's required by the law, and is also essential for customer happiness.
+
+  Scenario: Jeff returns a faulty microwave
+    Given Jeff has bought a microwave for $100
+    And he has a receipt
+    When he returns the microwave
+    Then Jeff should be refunded $100
+#+END_SRC
+
+- Living documentation
+- Tests are created before actual implementation (whole team may/should participates)
+
+- https://cucumber.io/docs/reference
+
+* Cucumber - JavaScript implementation
+
+- https://github.com/cucumber/cucumber-js
+
+It's tested using Cucumber: https://github.com/cucumber/cucumber-js/tree/master/features
+
+* Cucumber - Story -> Rules -> Examples (Scenarios)
+- [[https://cucumber.io/blog/2015/12/08/example-mapping-introduction][Introducing Example Mapping]]
+- http://scrumblr.ca/avast-js-workshop
+
+* Cucumber Don'ts
+- https://cucumber.io/blog/2016/07/01/cucumber-antipatterns-part-one
+- https://cucumber.io/blog/2016/08/31/cucumber-anti-patterns-part-two
+
+- Writing the scenario after you've written the code
+- Product Owner creating scenarios in isolation
+- Scenario with either a bad name or no name at all
+- High-level and vague scenarios
+
+* Cucumber - Story: Echo bot (easy)
+#+BEGIN_SRC feature
+  Feature: Echo command
+
+  As a user I would like to chat with someone even when there is no-one
+  available. It would be nice if system would echo my messages when I
+  request it to do so.
+
+  Background:
+    Given app is running
+
+  Scenario: User issues echo command
+    Given that "Alice" is logged in
+    When "Alice" sends following messages
+      | message     |
+      | !echo hello |
+    Then "Alice" sees following messages
+      | message     | author |
+      | !echo hello | Alice  |
+      | hello       | System |
+    # Then "Alice" sees that System replied with "hello" message
+#+END_SRC
+
+* Cucumber - Story: Reject messages with bad words
+#+BEGIN_SRC feature
+  Feature: Filter messages with bad words
+
+  Various people use our chat app; even minors. We need to filter
+  messages with bad words in order not to get sued.
+
+  Rules:
+
+   - Message containing bad words (i.e. foo, bar, baz) should not appear
+     in a list of messages.
+
+   - Offender should receive error response when he submits message
+     which contains bad words.
+#+END_SRC
+
+* Cucumber - Story: Let users compute factorial
+#+BEGIN_SRC feature
+  Feature: Factorial command
+
+  Our users love to compute factorials and want to share these
+  computations with others. Let's provide them !fact command which would
+  take a number and System user will reply with result.
+
+  Rules:
+   ...
+#+END_SRC
+
+* Project
+Chat application server which let's user log-in and send messages into
+shared channel.
+
+- =/messages= (session ID)
+  - GET :: returns list of messages
+  - POST :: append message
+
+- =/login= (username)
+  - POST :: returns session ID
+  
+* Mics
+*** nodemon
+*** Focused specs
+*** Pending specs

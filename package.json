@@ -1,0 +1,27 @@
+{
+  "name": "avast-workshop-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "cucumber": "cucumber.js",
+    "watch-test": "nodemon spec/runner.js",
+    "watch-cucumber": "nodemon --exec cucumber.js --ext js,feature"
+  },
+  "author": "Marian Schubert",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "cucumber": "^2.0.0-rc.2",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2",
+    "uuid": "^3.0.1"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "body-parser": "^1.15.2"
+  }
+}
