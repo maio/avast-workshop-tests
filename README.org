@@ -1,4 +1,5 @@
 * Agenda
+- Survey
 - What's BDD?
 - Mocha framework
 - Cucumber framework
@@ -85,7 +86,6 @@ Term coined by Dan North - https://dannorth.net/introducing-bdd/
   describe("Calculator", function () {
     describe("+", function () {
       it("sum of 1 and 1 is 2", function () {
-      
       });
     });
   });
@@ -132,8 +132,21 @@ mkdir my-project
 cd my-project
 npm init
 npm install --save-dev mocha
+mkdir test
 #+END_SRC
 
+** First test
+- =test/test.js=
+#+BEGIN_SRC js2
+var assert = require('assert');
+describe('Array', function() {
+  describe('#indexOf()', function() {
+    it('should return -1 when the value is not present', function() {
+      assert.equal(-1, [1,2,3].indexOf(4));
+    });
+  });
+});
+#+END_SRC
 ** Run
 - =package.json=
     #+BEGIN_SRC json
