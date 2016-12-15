@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "cucumber": "cucumber.js",
+    "cucumber": "cucumber-js",
     "watch-test": "nodemon spec/runner.js",
     "watch-cucumber": "nodemon --exec cucumber.js --ext js,feature"
   },

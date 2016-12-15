@@ -56,6 +56,10 @@ module.exports = function () {
 
     db.insertMessage(userId, message);
 
+    if (message === '!echo hello') {
+      db.insertMessage('System', 'hello');
+    }
+
     return res.end();
   });
 

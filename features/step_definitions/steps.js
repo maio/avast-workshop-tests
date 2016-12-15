@@ -37,4 +37,15 @@ module.exports = function () {
       .send({sessionId: this.users[userId].sessionId})
       .expect(200, {messages: table.hashes()});
   });
+
+  this.Then('{stringInDoubleQuotes} sees that System replied with {stringInDoubleQuotes} message', function (userId, expectedMessage) {
+    return this.agent.get('/chat')
+      .send({sessionId: this.users[userId].sessionId})
+      .expect(200)
+      .expect(function (res) {
+        var lastMessage = res.body.messages.pop();
+        expect(lastMessage.author).to.equal('System');
+        expect(lastMessage.message).to.equal(expectedMessage);
+      });
+  });
 };
